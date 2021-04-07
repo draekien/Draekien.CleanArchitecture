@@ -1,5 +1,7 @@
 ﻿using System.Net.Mime;
 
+using FluentValidation.AspNetCore;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -25,7 +27,7 @@ namespace WeatherForecast.Api.OnStart
                 options.Filters.Add(new ProducesResponseTypeAttribute(typeof(UnhandledExceptionProblemDetails), StatusCodes.Status500InternalServerError));
 
                 options.Conventions.Add(new ControllerNameFromGroupConvention());
-            });
+            }).AddFluentValidation();
         }
     }
 

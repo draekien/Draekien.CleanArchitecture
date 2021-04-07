@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WeatherForecast.Application.Common.ProblemDetailObjects
 {
+    /// <inheritdoc />
     public class BadRequestProblemDetails : ProblemDetails
     {
         public BadRequestProblemDetails(ValidationException ex, IExceptionHandlerFeature errorFeature, HttpContext context)

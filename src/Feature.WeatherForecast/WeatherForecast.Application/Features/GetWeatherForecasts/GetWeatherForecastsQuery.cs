@@ -12,6 +12,9 @@ namespace WeatherForecast.Application.Features.GetWeatherForecasts
 {
     public class GetWeatherForecastsQuery : IRequest<IEnumerable<WeatherForecastDetails>>
     {
+        /// <summary>
+        ///     The number of days to forecast
+        /// </summary>
         public int Days { get; set; }
 
         public class Validator : AbstractValidator<GetWeatherForecastsQuery>

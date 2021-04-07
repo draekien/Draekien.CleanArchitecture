@@ -11,6 +11,12 @@ namespace WeatherForecast.Api.Controllers
 {
     public class WeatherForecastController : ApiControllerBase
     {
+        /// <summary>
+        ///     Gets the Weather Forecast for a specified number of days
+        /// </summary>
+        /// <param name="days">Number of days to forecast</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/></param>
+        /// <returns>A list of <see cref="WeatherForecastDetails"/></returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<WeatherForecastDetails>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromQuery] int days = 1, CancellationToken cancellationToken = default)

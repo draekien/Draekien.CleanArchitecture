@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WeatherForecast.Application.Common.ProblemDetailObjects
 {
+    /// <inheritdoc />
     public class UnhandledExceptionProblemDetails : ProblemDetails
     {
         public UnhandledExceptionProblemDetails(Exception ex, IExceptionHandlerFeature errorFeature, HttpContext context)
