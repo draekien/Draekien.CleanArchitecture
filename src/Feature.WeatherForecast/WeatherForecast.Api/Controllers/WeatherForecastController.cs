@@ -1,41 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+
+using WeatherForecast.Application.Features.GetWeatherForecasts;
 
 namespace WeatherForecast.Api.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherForecastController : ApiControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
-
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [ProducesResponseType(typeof(IEnumerable<WeatherForecastDetails>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get([FromQuery] int days = 1, CancellationToken cancellationToken = default)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5)
-                             .Select(index => new WeatherForecast
-                             {
-                                 Date = DateTime.Now.AddDays(index),
-                                 TemperatureC = rng.Next(-20, 55),
-                                 Summary = Summaries[rng.Next(Summaries.Length)]
-                             })
-                             .ToArray();
+            var query = new GetWeatherForecastsQuery { Days = days };
+            IEnumerable<WeatherForecastDetails> result = await Mediator.Send(query, cancellationToken);
+
+            return Ok(result);
         }
     }
 }

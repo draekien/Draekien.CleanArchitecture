@@ -1,8 +1,8 @@
 using System;
 
-namespace WeatherForecast.Api
+namespace WeatherForecast.Application.Features.GetWeatherForecasts
 {
-    public class WeatherForecast
+    public class WeatherForecastDetails
     {
         public DateTime Date { get; set; }
 
