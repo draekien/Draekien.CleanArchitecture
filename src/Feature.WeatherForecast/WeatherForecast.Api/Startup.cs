@@ -10,6 +10,7 @@ using Serilog;
 
 using WeatherForecast.Api.OnStart;
 using WeatherForecast.Application;
+using WeatherForecast.Infrastructure;
 
 namespace WeatherForecast.Api
 {
@@ -27,6 +28,7 @@ namespace WeatherForecast.Api
         {
             services.AddHttpContextAccessor();
             services.AddApplication();
+            services.AddInfrastructure();
             services.AddCustomControllers();
             services.AddCustomSwaggerGen();
 

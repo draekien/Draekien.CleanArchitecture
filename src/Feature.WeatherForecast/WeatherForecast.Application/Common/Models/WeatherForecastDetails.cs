@@ -1,6 +1,6 @@
 using System;
 
-namespace WeatherForecast.Application.Features.GetWeatherForecasts
+namespace WeatherForecast.Application.Common.Models
 {
     /// <summary>
     /// The Details of a Weather Forecast
@@ -25,6 +25,6 @@ namespace WeatherForecast.Application.Features.GetWeatherForecasts
         /// <summary>
         /// A summary of the forecast conditions for the specified Date
         /// </summary>
-        public string Summary { get; set; }
+        public string? Summary { get; set; }
     }
 }

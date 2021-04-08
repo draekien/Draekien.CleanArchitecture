@@ -30,6 +30,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\WeatherForecast.Application\WeatherForecast.Application.csproj" />
+      <ProjectReference Include="..\WeatherForecast.Infrastructure\WeatherForecast.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

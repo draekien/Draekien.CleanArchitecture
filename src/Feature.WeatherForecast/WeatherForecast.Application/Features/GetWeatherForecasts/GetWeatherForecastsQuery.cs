@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,9 @@ using FluentValidation;
 
 using MediatR;
 
+using WeatherForecast.Application.Common.Interfaces;
+using WeatherForecast.Application.Common.Models;
+
 namespace WeatherForecast.Application.Features.GetWeatherForecasts
 {
     public class GetWeatherForecastsQuery : IRequest<IEnumerable<WeatherForecastDetails>>
@@ -15,35 +19,32 @@ namespace WeatherForecast.Application.Features.GetWeatherForecasts
         /// <summary>
         ///     The number of days to forecast
         /// </summary>
-        public int Days { get; set; }
+        [DefaultValue(1)]
+        public int Days { get; set; } = 1;
 
         public class Validator : AbstractValidator<GetWeatherForecastsQuery>
         {
             public Validator()
             {
-                RuleFor(x => x.Days).NotNull().GreaterThan(0).LessThan(5);
+                RuleFor(x => x.Days).GreaterThan(0).LessThan(5);
             }
         }
 
         public class Handler : IRequestHandler<GetWeatherForecastsQuery, IEnumerable<WeatherForecastDetails>>
         {
-            private static readonly string[] Summaries = {
-                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
+            private readonly IWeatherForecastApiClient _weatherForecastApiClient;
+
+            public Handler(IWeatherForecastApiClient weatherForecastApiClient)
+            {
+                _weatherForecastApiClient = weatherForecastApiClient;
+            }
 
             /// <inheritdoc />
             public async Task<IEnumerable<WeatherForecastDetails>> Handle(GetWeatherForecastsQuery request, CancellationToken cancellationToken)
             {
-                var rng = new Random();
-                IEnumerable<WeatherForecastDetails> result = Enumerable.Range(1, request.Days)
-                                                                .Select(index => new WeatherForecastDetails
-                                                                {
-                                                                    Date = DateTime.Now.AddDays(index),
-                                                                    TemperatureC = rng.Next(-20, 55),
-                                                                    Summary = Summaries[rng.Next(Summaries.Length)]
-                                                                });
+                IEnumerable<WeatherForecastDetails> result = await _weatherForecastApiClient.GetAsync(request.Days, cancellationToken);
 
-                return await Task.FromResult(result);
+                return result;
             }
         }
     }
