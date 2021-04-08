@@ -21,7 +21,7 @@ namespace WeatherForecast.Application.Features.GetWeatherForecasts
         {
             public Validator()
             {
-                RuleFor(x => x.Days).GreaterThan(0).LessThan(5);
+                RuleFor(x => x.Days).NotNull().GreaterThan(0).LessThan(5);
             }
         }
 
