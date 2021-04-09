@@ -14,6 +14,11 @@ namespace WeatherForecast.Application.Common.Mappings
             ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
+        public MappingProfile(Assembly assembly)
+        {
+            ApplyMappingsFromAssembly(assembly);
+        }
+
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
             List<Type> types = assembly.GetExportedTypes()
