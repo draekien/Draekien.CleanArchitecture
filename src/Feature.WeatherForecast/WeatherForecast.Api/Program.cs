@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 
 using Serilog;
 
+using WeatherForecast.Application.Common.Extensions;
+
 namespace WeatherForecast.Api
 {
     public class Program
@@ -24,6 +26,7 @@ namespace WeatherForecast.Api
 
                 Log.Logger = new LoggerConfiguration()
                              .ReadFrom.Configuration(configuration)
+                             .Enrich.WithCorrelationIdHeader()
                              .CreateLogger();
 
                 CreateHostBuilder(args).Build().Run();

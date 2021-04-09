@@ -1,3 +1,5 @@
+using System.Linq;
+
 using Hellang.Middleware.ProblemDetails;
 
 using Microsoft.AspNetCore.Builder;
@@ -21,18 +23,18 @@ namespace WeatherForecast.Api
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddHealthChecks();
             services.AddApplication();
             services.AddInfrastructure();
+            services.AddProblemDetails();
             services.AddCustomControllers();
             services.AddCustomSwaggerGen();
-
-            services.AddProblemDetails(ConfigureProblemDetails.Defaults);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,9 +56,17 @@ namespace WeatherForecast.Api
                 });
             }
 
-            app.UseSerilogRequestLogging();
+            app.UseHealthChecks("/health");
+            app.UseSerilogRequestLogging(options =>
+            {
+                options.EnrichDiagnosticContext = (context, httpContext) =>
+                {
+                    context.Set("RequestHost", httpContext.Request.Host.Value);
+                    context.Set("RequestScheme", httpContext.Request.Scheme);
+                };
+            });
             app.UseProblemDetails();
-            app.UseExceptionHandler(ConfigureExceptionHandler.Defaults);
+            app.UseExceptionHandler(ExceptionHandler.ProblemDetailsHandler);
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();

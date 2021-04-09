@@ -13,9 +13,9 @@ using WeatherForecast.Application.Common.ProblemDetailObjects;
 
 namespace WeatherForecast.Api.OnStart
 {
-    public static class ConfigureExceptionHandler
+    public static class ExceptionHandler
     {
-        public static void Defaults(this IApplicationBuilder errorApp)
+        public static void ProblemDetailsHandler(this IApplicationBuilder errorApp)
         {
             errorApp.Run(async context =>
             {

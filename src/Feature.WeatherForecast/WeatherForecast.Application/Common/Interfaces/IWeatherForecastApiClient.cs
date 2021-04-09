@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using WeatherForecast.Application.Common.Models;
-using WeatherForecast.Application.Features.GetWeatherForecasts;
 
 namespace WeatherForecast.Application.Common.Interfaces
 {

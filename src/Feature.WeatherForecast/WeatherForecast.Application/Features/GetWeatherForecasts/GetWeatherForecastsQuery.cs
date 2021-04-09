@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +24,9 @@ namespace WeatherForecast.Application.Features.GetWeatherForecasts
         {
             public Validator()
             {
-                RuleFor(x => x.Days).GreaterThan(0).LessThan(5);
+                RuleFor(x => x.Days)
+                    .GreaterThan(0)
+                    .LessThanOrEqualTo(5);
             }
         }
 

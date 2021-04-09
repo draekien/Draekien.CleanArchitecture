@@ -4,6 +4,8 @@ using System.Reflection;
 
 using FluentValidation.AspNetCore;
 
+using Hellang.Middleware.ProblemDetails.Mvc;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -20,36 +22,47 @@ namespace WeatherForecast.Api.OnStart
     {
         public static void AddCustomControllers(this IServiceCollection services)
         {
-            services.AddControllers(options =>
-                    {
-                        options.ReturnHttpNotAcceptable = true;
-                        options.RespectBrowserAcceptHeader = true;
+            services.AddControllers(SetControllerConfiguration)
+                    .AddProblemDetailsConventions()
+                    .AddFluentValidation(SetFluentValidationConfiguration)
+                    .AddNewtonsoftJson(SetNewtonsoftJsonConfiguration);
 
-                        options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json));
-                        options.Filters.Add(new ConsumesAttribute(MediaTypeNames.Application.Json));
+            services.AddControllers(RemoveExcessNewtonsoftJsonFormatters);
+        }
 
-                        options.Filters.Add(new ProducesResponseTypeAttribute(typeof(BadRequestProblemDetails), StatusCodes.Status400BadRequest));
-                        options.Filters.Add(new ProducesResponseTypeAttribute(typeof(UnhandledExceptionProblemDetails), StatusCodes.Status500InternalServerError));
+        private static void RemoveExcessNewtonsoftJsonFormatters(MvcOptions options)
+        {
+            options.InputFormatters.RemoveType<NewtonsoftJsonPatchInputFormatter>();
+            var jsonInputFormatter = (NewtonsoftJsonInputFormatter) options.InputFormatters.Single(formatter => formatter is NewtonsoftJsonInputFormatter);
+            jsonInputFormatter.SupportedMediaTypes.Clear();
+            jsonInputFormatter.SupportedMediaTypes.Add("application/json");
+        }
 
-                        options.Conventions.Add(new ControllerNameFromGroupConvention());
-                    })
-                    .AddFluentValidation(config =>
-                    {
-                        config.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-                    })
-                    .AddNewtonsoftJson(options =>
-                    {
-                        options.UseCamelCasing(true);
-                        options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    });
+        private static void SetNewtonsoftJsonConfiguration(MvcNewtonsoftJsonOptions options)
+        {
+            options.UseCamelCasing(true);
+            options.SerializerSettings.Converters.Add(new StringEnumConverter());
+        }
 
-            services.AddControllers(options =>
-            {
-                options.InputFormatters.RemoveType<NewtonsoftJsonPatchInputFormatter>();
-                var jsonInputFormatter = (NewtonsoftJsonInputFormatter) options.InputFormatters.Single(formatter => formatter is NewtonsoftJsonInputFormatter);
-                jsonInputFormatter.SupportedMediaTypes.Clear();
-                jsonInputFormatter.SupportedMediaTypes.Add("application/json");
-            });
+        private static void SetFluentValidationConfiguration(FluentValidationMvcConfiguration options)
+        {
+            options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            options.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
+            options.AutomaticValidationEnabled = false; // so we can use our own exception handler
+        }
+
+        private static void SetControllerConfiguration(MvcOptions options)
+        {
+            options.ReturnHttpNotAcceptable = true;
+            options.RespectBrowserAcceptHeader = true;
+
+            options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json));
+            options.Filters.Add(new ConsumesAttribute(MediaTypeNames.Application.Json));
+
+            options.Filters.Add(new ProducesResponseTypeAttribute(typeof(BadRequestProblemDetails), StatusCodes.Status400BadRequest));
+            options.Filters.Add(new ProducesResponseTypeAttribute(typeof(UnhandledExceptionProblemDetails), StatusCodes.Status500InternalServerError));
+
+            options.Conventions.Add(new ControllerNameFromGroupConvention());
         }
     }
 
